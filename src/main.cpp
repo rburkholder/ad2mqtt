@@ -8,6 +8,8 @@
 #include <sstream>
 #include <fstream>
 
+#include <string>
+
 #include <chrono>
 #include <thread>
 
@@ -19,13 +21,12 @@
 //namespace asio = boost::asio;
 
 // referenced from Exploring BeagleBone 2e 2019 Derek Molloy
-#define ADC_PATH "/sys/bus/iio/devices/iio:device0/in_voltage"
-#define ADC 0
+static const std::string c_analog_in_path( "/sys/bus/iio/devices/iio:device0/in_voltage" );
 
 uint16_t readAnalog( uint16_t ix ) { // range 0 - 4095 / 12 bits
   uint16_t value;
   std::stringstream ss;
-  ss << ADC_PATH << ix << "_raw";
+  ss << c_analog_in_path << ix << "_raw";
   std::fstream fs;
   fs.open( ss.str().c_str(), std::fstream::in );
   fs >> value;
