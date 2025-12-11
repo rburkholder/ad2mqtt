@@ -104,7 +104,9 @@ int main( int argc, char **argv ) {
     const uint16_t ani1 = readAnalog( 1 );
     mm.update( ani1 );
 
-    std::cout << mm.min << ',' << mm.max << ':' << ani0 << ',' << ani1 << std::endl;
+    std::cout << mm.min << ',' << mm.max << ':' << ani0 << ',' << ani1;
+    if ( 2000 < ani1 ) std::cout << " ********";
+    std::cout << std::endl;
     std::this_thread::sleep_for( std::chrono::milliseconds( 1000 ) );
   }
 
