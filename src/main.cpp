@@ -23,23 +23,16 @@
 // referenced from Exploring BeagleBone 2e 2019 Derek Molloy
 static const std::string c_analog_in_path( "/sys/bus/iio/devices/iio:device0/in_voltage" );
 
-// keep the device open, may lock out other devices
-struct iio_device {
-  std::fstream fs;
+uint16_t readAnalog( uint16_t ix ) { // range 0 - 4095 / 12 bits
+  uint16_t value;
   std::stringstream ss;
-  iio_device( const uint16_t ix ) {
-    ss << c_analog_in_path << ix << "_raw";
-    fs.open( ss.str().c_str(), std::fstream::in );
-  }
-  ~iio_device() {
-    fs.close();
-  }
-  uint16_t get() {
-    uint16_t value;
-    fs >> value;
-    return value;
-  }
-};
+  ss << c_analog_in_path << ix << "_raw";
+  std::fstream fs;
+  fs.open( ss.str().c_str(), std::fstream::in );
+  fs >> value;
+  fs.close();
+  return value;
+}
 
 struct minmax {
   uint16_t max;
@@ -88,14 +81,12 @@ int main( int argc, char **argv ) {
   //}
 
   minmax mm;
-  iio_device iio0( 0 );
-  iio_device iio1( 1 );
   
   while( true ) {
-    const uint16_t ani0 = iio0.get();
+    const uint16_t ani0 = readAnalog( 0 );
     mm.update( ani0 );
 
-    const uint16_t ani1 = iio1.get();
+    const uint16_t ani1 = readAnalog( 1 );
     mm.update( ani1 );
 
     std::cout << mm.min << ',' << mm.max << ':' << ani0 << ',' << ani1 << std::endl;
