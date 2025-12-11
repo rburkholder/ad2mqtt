@@ -8,6 +8,9 @@
 #include <sstream>
 #include <fstream>
 
+#include <chrono>
+#include <thread>
+
 //#include <boost/asio/io_context.hpp>
 
 //#include "Loop.hpp"
@@ -52,7 +55,10 @@ int main( int argc, char **argv ) {
   //  return EXIT_FAILURE;
   //}
   
-  std::cout << "ani: " << readAnalog( 0 ) << ',' << readAnalog( 1 ) << std::endl;
+  while( true ) {
+    std::cout << "ani: " << readAnalog( 0 ) << ',' << readAnalog( 1 ) << std::endl;
+    std::this_thread::sleep_for( std::chrono::milliseconds( 1000 ) );
+  }
 
   return EXIT_SUCCESS;
 }
