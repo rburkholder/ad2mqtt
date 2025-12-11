@@ -21,15 +21,38 @@
 #define ADC_PATH "/sys/bus/iio/devices/iio:device0/in_voltage"
 #define ADC 0
 
-int readAnalog( int number ) {
+uint16_t readAnalog( uint16_t ix ) { // range 0 - 4095 / 12 bits
+  uint16_t value;
   std::stringstream ss;
-  ss << ADC_PATH << number << "_raw";
+  ss << ADC_PATH << ix << "_raw";
   std::fstream fs;
   fs.open( ss.str().c_str(), std::fstream::in );
-  fs >> number;
+  fs >> value;
   fs.close();
-  return number;
+  return value;
 }
+
+struct minmax {
+  uint16_t max;
+  uint16_t min;
+  bool bFirst;
+
+  minmax(): bFirst( true ) {}
+
+  void update( const uint16_t value ) {
+    if ( bFirst ) {
+      min = max = value;
+      bFirst = false;
+    }
+    else {
+      if ( min > value ) min = value;
+      else {
+        if ( max < value ) max = value;
+      }
+    }
+  }
+
+};
 
 int main( int argc, char **argv ) {
 
@@ -54,9 +77,17 @@ int main( int argc, char **argv ) {
   //catch(...) {
   //  return EXIT_FAILURE;
   //}
+
+  minmax mm;
   
   while( true ) {
-    std::cout << "ani: " << readAnalog( 0 ) << ',' << readAnalog( 1 ) << std::endl;
+    const uint16_t ani0 = readAnalog( 0 );
+    mm.update( ani0 );
+
+    const uint16_t ani1 = readAnalog( 1 );
+    mm.update( ani1 );
+
+    std::cout << mm.min << ',' << mm.max << ':' << ani0 << ',' << ani1 << std::endl;
     std::this_thread::sleep_for( std::chrono::milliseconds( 1000 ) );
   }
 
