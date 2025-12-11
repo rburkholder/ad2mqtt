@@ -18,6 +18,7 @@
 
 //namespace asio = boost::asio;
 
+// referenced from Exploring BeagleBone 2e 2019 Derek Molloy
 #define ADC_PATH "/sys/bus/iio/devices/iio:device0/in_voltage"
 #define ADC 0
 
