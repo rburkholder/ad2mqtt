@@ -28,6 +28,8 @@
 #include <chrono>
 #include <thread>
 
+#include <vector>
+
 //#include <boost/asio/io_context.hpp>
 
 //#include "Loop.hpp"
@@ -37,17 +39,6 @@
 
 // referenced from Exploring BeagleBone 2e 2019 Derek Molloy
 static const std::string c_analog_in_path( "/sys/bus/iio/devices/iio:device0/in_voltage" );
-
-uint16_t readAnalog( uint16_t ix ) { // range 0 - 4095 / 12 bits
-  uint16_t value;
-  std::stringstream ss;
-  ss << c_analog_in_path << ix << "_raw";
-  std::fstream fs;
-  fs.open( ss.str().c_str(), std::fstream::in );
-  fs >> value;
-  fs.close();
-  return value;
-}
 
 struct minmax {
   uint16_t max;
@@ -71,6 +62,34 @@ struct minmax {
 
 };
 
+class AnalogIn {
+public:
+  AnalogIn( uint16_t ix_ )
+  : ix( ix_ )
+  {
+    ss << c_analog_in_path << ix << "_raw";
+  }
+  AnalogIn( AnalogIn&& rhs )
+  : ix( rhs.ix )
+  , ss( std::move( rhs.ss ) )
+  , fs( std::move( rhs.fs ) )
+  {}
+
+  uint16_t Read() {
+    uint16_t value;
+    fs.open( ss.str().c_str(), std::fstream::in );
+    fs >> value;
+    fs.close();
+    return value;
+  }
+
+protected:
+private:
+  const uint16_t ix; // not used
+  std::stringstream ss;
+  std::fstream fs;
+};
+
 int main( int argc, char **argv ) {
 
   static const std::string c_sConfigFilename( "ad2mqtt.cfg" );
@@ -85,6 +104,13 @@ int main( int argc, char **argv ) {
     return EXIT_FAILURE;
   }
 
+  using vAnalogIn_t = std::vector<AnalogIn>;
+  vAnalogIn_t vAnalogIn;
+
+  for ( uint16_t ix: choices.setAnalogInIx ) {
+    vAnalogIn.emplace_back( AnalogIn( ix ) );
+  }
+
   //asio::io_context io_context;
 
   //try {
@@ -96,16 +122,27 @@ int main( int argc, char **argv ) {
   //}
 
   minmax mm;
-  
+
   while( true ) {
-    const uint16_t ani0 = readAnalog( 0 );
-    mm.update( ani0 );
 
-    const uint16_t ani1 = readAnalog( 1 );
-    mm.update( ani1 );
+    uint16_t value;
 
-    std::cout << mm.min << ',' << mm.max << ':' << ani0 << ',' << ani1;
-    if ( 2000 < ani1 ) {
+    bool bComma( false );
+    uint16_t value_max {};
+
+    for ( AnalogIn& ain: vAnalogIn ) {
+      if ( bComma ) std::cout << ',';
+      else bComma = true;
+
+      value = ain.Read();
+      std::cout << value;
+
+      mm.update( value );
+      if ( value > value_max ) value_max = value;
+    }
+
+    std::cout << ':' << mm.min << ',' << mm.max;
+    if ( 2000 < value_max ) {
       std::cout << " ********";
       std::cout << '\a';
     }
