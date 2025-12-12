@@ -31,7 +31,7 @@
 //#include <boost/asio/io_context.hpp>
 
 //#include "Loop.hpp"
-//#include "Config.hpp"
+#include "Config.hpp"
 
 //namespace asio = boost::asio;
 
@@ -77,13 +77,13 @@ int main( int argc, char **argv ) {
 
   std::cout << "AD2MQTT (c)2025 One Unified Net Limited" << std::endl;
 
-  //config::Values choices;
+  config::Values choices;
 
-  //if ( Load( c_sConfigFilename, choices ) ) {
-  //}
-  //else {
-  //  return EXIT_FAILURE;
-  //}
+  if ( Load( c_sConfigFilename, choices ) ) {
+  }
+  else {
+    return EXIT_FAILURE;
+  }
 
   //asio::io_context io_context;
 
@@ -105,7 +105,10 @@ int main( int argc, char **argv ) {
     mm.update( ani1 );
 
     std::cout << mm.min << ',' << mm.max << ':' << ani0 << ',' << ani1;
-    if ( 2000 < ani1 ) std::cout << " ********";
+    if ( 2000 < ani1 ) {
+      std::cout << " ********";
+      std::cout << '\a';
+    }
     std::cout << std::endl;
     std::this_thread::sleep_for( std::chrono::milliseconds( 1000 ) );
   }
