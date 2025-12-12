@@ -123,29 +123,39 @@ int main( int argc, char **argv ) {
 
   minmax mm;
 
+  using vValue_t = std::vector<uint16_t>;
+  vValue_t vValue;
+
   while( true ) {
 
     uint16_t value;
 
-    bool bComma( false );
     uint16_t value_max {};
 
     for ( AnalogIn& ain: vAnalogIn ) {
+      value = ain.Read();
+      mm.update( value );
+      if ( value > value_max ) value_max = value;
+      vValue.push_back( value );
+    }
+
+    std::cout << mm.min << ',' << mm.max << ':';
+
+    bool bComma( false );
+    for ( const uint16_t value: vValue ) {
+
       if ( bComma ) std::cout << ',';
       else bComma = true;
 
-      value = ain.Read();
       std::cout << value;
-
-      mm.update( value );
-      if ( value > value_max ) value_max = value;
     }
+    vValue.clear();
 
-    std::cout << ':' << mm.min << ',' << mm.max;
     if ( 2000 < value_max ) {
       std::cout << " ********";
       std::cout << '\a';
     }
+
     std::cout << std::endl;
     std::this_thread::sleep_for( std::chrono::milliseconds( 1000 ) );
   }
