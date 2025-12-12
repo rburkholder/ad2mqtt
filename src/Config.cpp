@@ -22,6 +22,7 @@
 #include <vector>
 #include <fstream>
 #include <exception>
+//#include <type_traits>
 
 #include <boost/log/trivial.hpp>
 
@@ -38,7 +39,28 @@ namespace {
   static const std::string sValue_Mqtt_Password( "mqtt_password" );
   static const std::string sValue_Mqtt_Topic( "mqtt_topic" );
 
+  static const std::string sValue_PollInterval( "poll_interval" );
+
   static const std::string sValue_AnalogInIx( "analog_in_ix" );
+
+  //template<typename T>
+  //void log( const std::string& name, typename std::enable_if<std::is_pod<T&>::value>::type& dest ) {
+  //  BOOST_LOG_TRIVIAL(info) << name << " = " << dest;
+  //}
+
+  void log( const std::string& name, int dest ) {
+    BOOST_LOG_TRIVIAL(info) << name << " = " << dest;
+  }
+
+  void log( const std::string& name, const std::string& dest ) {
+    BOOST_LOG_TRIVIAL(info) << name << " = " << dest;
+  }
+
+  //void log( const std::string& name, const vName_t& dest ) {
+  //  for ( const vName_t::value_type& value: dest ) {
+  //    BOOST_LOG_TRIVIAL(info) << name << " = " << value;
+  //  }
+  //}
 
   template<typename T>
   bool parse( const std::string& sFileName, po::variables_map& vm, const std::string& name, T& dest ) {
@@ -46,6 +68,7 @@ namespace {
     if ( 0 < vm.count( name ) ) {
       dest = vm[name].as<T>();
       //BOOST_LOG_TRIVIAL(info) << name << " = " << dest;
+      log( name, dest );
     }
     else {
       BOOST_LOG_TRIVIAL(error) << sFileName << " missing '" << name << "='";
@@ -73,7 +96,9 @@ bool Load( const std::string& sFileName, Values& values ) {
       ( sValue_Mqtt_Host.c_str(), po::value<std::string>( &values.mqtt.sHost )->default_value( "localhost" ), "mqtt host address or name" )
       ( sValue_Mqtt_UserName.c_str(), po::value<std::string>( &values.mqtt.sUserName ), "mqtt username" )
       ( sValue_Mqtt_Password.c_str(), po::value<std::string>( &values.mqtt.sPassword ), "mqtt password" )
-      ( sValue_Mqtt_Topic.c_str(), po::value<std::string>( &values.mqtt.sTopic )->default_value( "ad" ), "mqtt topic" )
+      ( sValue_Mqtt_Topic.c_str(), po::value<std::string>( &values.mqtt.sTopic )->default_value( "analog_in" ), "mqtt topic" )
+
+      ( sValue_PollInterval.c_str(), po::value<uint16_t>( &values.nPollIntervalSeconds ) )
 
       ( sValue_AnalogInIx.c_str(), po::value<vAnalogInIx_t>( &vAnalogInIx ), "analog-in index" )
       ;
@@ -95,8 +120,13 @@ bool Load( const std::string& sFileName, Values& values ) {
       bOk &= parse<std::string>( sFileName, vm, sValue_Mqtt_Password, values.mqtt.sPassword );
       bOk &= parse<std::string>( sFileName, vm, sValue_Mqtt_Topic, values.mqtt.sTopic );
 
+      bOk &= parse<uint16_t>( sFileName, vm, sValue_PollInterval, values.nPollIntervalSeconds );
+
       if ( 0 < vm.count( sValue_AnalogInIx ) ) {
         vAnalogInIx = vm[ sValue_AnalogInIx ].as<vAnalogInIx_t>();
+      }
+      else {
+        bOk = false;
       }
       //bOk &= parse<setAnalogInIx_t>( sFileName, vm, sValue_AnalogInIx, values.set_ani );
     }

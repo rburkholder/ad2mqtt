@@ -13,30 +13,62 @@
  ************************************************************************/
 
 /*
- * File:    Config.hpp
+ * File:    Loop.hpp
  * Author:  raymond@burkholder.net
  * Project: AD2MQTT
- * Created: 2025/12/10 23:24:17
+ * Created: 2025/12/11 21:10:03
  */
 
-#pragma once
-
 #include <set>
+#include <memory>
+#include <string>
 
-#include <ou/mqtt/config.hpp>
+#include <boost/asio/io_context.hpp>
+#include <boost/asio/signal_set.hpp>
+#include <boost/asio/steady_timer.hpp>
+#include <boost/asio/executor_work_guard.hpp>
+
+#include "AnalogIn.hpp"
 
 namespace config {
+  class Values;
+}
 
-using setAnalogInIx_t = std::set<uint16_t>;
+namespace ou {
+  class Mqtt;
+}
 
-struct Values {
+namespace asio = boost::asio; // from <boost/asio/context.hpp>
 
-  ou::mqtt::Config mqtt;
-  uint16_t nPollIntervalSeconds;
-  setAnalogInIx_t setAnalogInIx;
+class Loop {
+public:
+  Loop( const config::Values&, asio::io_context& );
+  ~Loop();
+protected:
+private:
+
+  const config::Values& m_choices;
+  asio::io_context& m_io_context;
+
+  AnalogChannels m_AnalogChannels;
+
+  std::unique_ptr<ou::Mqtt> m_pMqtt;
+
+  using work_guard_t = asio::executor_work_guard<asio::io_context::executor_type>;
+  using pWorkGuard_t = std::unique_ptr<work_guard_t>;
+
+  pWorkGuard_t m_pWorkGuard;
+
+  using setName_t = std::set<std::string>;
+  using vValue_t = std::vector<std::string>;
+
+  setName_t m_setDeviceNames;
+
+  asio::signal_set m_signals;
+  asio::steady_timer m_timerPollInterval;
+
+  void Poll();
+  void Signals( const boost::system::error_code&, int );
 
 };
 
-bool Load( const std::string& sFileName, Values& );
-
-} // namespace config

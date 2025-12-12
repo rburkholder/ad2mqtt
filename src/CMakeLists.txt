@@ -20,14 +20,16 @@ find_package(Boost REQUIRED COMPONENTS program_options thread filesystem log)
 
 set(
   file_hpp
+    AnalogIn.hpp
     Config.hpp
-  #  Loop.hpp
+    Loop.hpp
   )
 
 set(
   file_cpp
+    AnalogIn.cpp
     Config.cpp
-  #  Loop.cpp
+    Loop.cpp
     main.cpp
   )
 
@@ -46,8 +48,8 @@ target_link_directories(
 
 target_link_libraries(
   ${PROJECT_NAME}
-  #libou_mqtt.a
-  #  libpaho-mqtt3c.a
+    libou_mqtt.a
+    libpaho-mqtt3c.a
     ${Boost_LIBRARIES}
   )
 

@@ -13,30 +13,49 @@
  ************************************************************************/
 
 /*
- * File:    Config.hpp
+ * File:    AnalogIn.hpp
  * Author:  raymond@burkholder.net
  * Project: AD2MQTT
- * Created: 2025/12/10 23:24:17
+ * Created: 2025/12/11 22:01:23
  */
 
-#pragma once
+#include <iostream>
+#include <sstream>
+#include <fstream>
 
-#include <set>
+#include <string>
 
-#include <ou/mqtt/config.hpp>
+#include <vector>
 
-namespace config {
+#include "Config.hpp"
 
-using setAnalogInIx_t = std::set<uint16_t>;
+class AnalogIn {
+public:
 
-struct Values {
+  AnalogIn( uint16_t ix_ );
+  AnalogIn( AnalogIn&& rhs );
 
-  ou::mqtt::Config mqtt;
-  uint16_t nPollIntervalSeconds;
-  setAnalogInIx_t setAnalogInIx;
+  uint16_t Read();
+  uint16_t Ix() const { return ix; }
 
+protected:
+private:
+  const uint16_t ix;
+  std::stringstream ss;
+  std::fstream fs;
 };
 
-bool Load( const std::string& sFileName, Values& );
+class AnalogChannels {
+public:
+  AnalogChannels( const config::Values& );
+  void Process( std::string& );
+protected:
+private:
 
-} // namespace config
+  using vAnalogIn_t = std::vector<AnalogIn>;
+  vAnalogIn_t vAnalogIn;
+
+  using vValue_t = std::vector<uint16_t>;
+  vValue_t vValue;
+};
+
