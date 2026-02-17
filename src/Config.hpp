@@ -22,6 +22,7 @@
 #pragma once
 
 #include <set>
+#include <cstdint>
 
 #include <ou/mqtt/config.hpp>
 
