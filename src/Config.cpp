@@ -98,7 +98,7 @@ bool Load( const std::string& sFileName, Values& values ) {
       ( sValue_Mqtt_Password.c_str(), po::value<std::string>( &values.mqtt.sPassword ), "mqtt password" )
       ( sValue_Mqtt_Topic.c_str(), po::value<std::string>( &values.mqtt.sTopic )->default_value( "analog_in" ), "mqtt topic" )
 
-      ( sValue_PollInterval.c_str(), po::value<uint16_t>( &values.nPollIntervalSeconds ) )
+      ( sValue_PollInterval.c_str(), po::value<uint16_t>( &values.nPollInterval ), "poll interval (milliseconds)" )
 
       ( sValue_AnalogInIx.c_str(), po::value<vAnalogInIx_t>( &vAnalogInIx ), "analog-in index" )
       ;
@@ -120,7 +120,13 @@ bool Load( const std::string& sFileName, Values& values ) {
       bOk &= parse<std::string>( sFileName, vm, sValue_Mqtt_Password, values.mqtt.sPassword );
       bOk &= parse<std::string>( sFileName, vm, sValue_Mqtt_Topic, values.mqtt.sTopic );
 
-      bOk &= parse<uint16_t>( sFileName, vm, sValue_PollInterval, values.nPollIntervalSeconds );
+      bOk &= parse<uint16_t>( sFileName, vm, sValue_PollInterval, values.nPollInterval );
+      if ( 10 > values.nPollInterval ) {
+        BOOST_LOG_TRIVIAL(error)
+          << "polling interval " << values.nPollInterval
+          << " must be 10 or higher";
+        bOk = false;
+      }
 
       if ( 0 < vm.count( sValue_AnalogInIx ) ) {
         vAnalogInIx = vm[ sValue_AnalogInIx ].as<vAnalogInIx_t>();

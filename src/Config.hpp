@@ -33,7 +33,7 @@ using setAnalogInIx_t = std::set<uint16_t>;
 struct Values {
 
   ou::mqtt::Config mqtt;
-  uint16_t nPollIntervalSeconds;
+  uint16_t nPollInterval;
   setAnalogInIx_t setAnalogInIx;
 
 };

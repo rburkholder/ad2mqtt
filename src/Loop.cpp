@@ -22,6 +22,7 @@
 #include <unistd.h>
 #include <limits.h>
 
+#include <chrono>
 #include <iostream>
 
 #include <boost/log/trivial.hpp>
@@ -170,7 +171,7 @@ void Loop::Poll() {
   }
 
   if ( m_pWorkGuard ) {
-    m_timerPollInterval.expires_after( std::chrono::seconds( m_choices.nPollIntervalSeconds) );
+    m_timerPollInterval.expires_after( std::chrono::milliseconds( m_choices.nPollInterval) );
     m_timerPollInterval.async_wait( [this]( const boost::system::error_code& e ){
       if ( 0 == e.value() ) {
         Poll();
