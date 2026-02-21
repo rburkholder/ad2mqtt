@@ -33,8 +33,21 @@ using setAnalogInIx_t = std::set<uint16_t>;
 struct Values {
 
   ou::mqtt::Config mqtt;
+
   uint16_t nPollInterval;
+  uint16_t nReportInterval; // multiple of nPollInterval
+
   setAnalogInIx_t setAnalogInIx;
+
+  uint16_t ixAInTemperature; // water temperature monitor for gas valve and pump
+
+  std::string sGPIO_Gas;
+  uint16_t nGasUpper; // off
+  uint16_t nGasLower; // on
+
+  std::string sGPIO_Pump;
+  uint16_t nPumpUpper; // on
+  uint16_t nPumpLower; // off
 
 };
 
