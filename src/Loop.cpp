@@ -44,6 +44,7 @@ Loop::Loop( const config::Values& choices, asio::io_context& io_context )
 , m_signals( io_context, SIGINT ) // SIGINT is called '^C'
 , m_timerPollInterval( io_context )
 , m_AnalogChannels( choices )
+, m_cntReportTrigger( choices.nReportInterval )
 {
 /*
   int rc;
@@ -143,25 +144,27 @@ void Loop::Poll() {
 
   try {
 
-    std::string sMessage;
-
     m_AnalogChannels.Process();
-    m_AnalogChannels.ComposeMessage( sMessage );
 
-    const std::string sTopic = m_choices.mqtt.sTopic;
-    sMessage = '{' + sMessage + '}';
+    assert( 0 < m_cntReportTrigger );
+    --m_cntReportTrigger;
+    if ( 0 == m_cntReportTrigger ) {
 
-    //std::cout << "topic: " << sTopic << std::endl;
-    //std::cout << sMessage << std::endl;
+      std::string sMessage( "{" );
+      m_AnalogChannels.ComposeMessage( sMessage );
+      sMessage += '}';
 
-    m_pMqtt->Publish(
-      sTopic, sMessage,
-      []( bool bStatus, int code ){
-        if ( bStatus ); // ok
-        else {
-          BOOST_LOG_TRIVIAL(error) << "mqtt publish error: " << code;
-        }
-      } );
+      m_pMqtt->Publish(
+        m_choices.mqtt.sTopic, sMessage,
+        []( bool bStatus, int code ){
+          if ( bStatus ); // ok
+          else {
+            BOOST_LOG_TRIVIAL(error) << "mqtt publish error: " << code;
+          }
+        } );
+
+      m_cntReportTrigger = m_choices.nReportInterval;
+    }
 
   }
   catch( const std::logic_error& e ) {

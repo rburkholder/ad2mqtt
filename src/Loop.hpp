@@ -66,6 +66,8 @@ private:
   asio::signal_set m_signals;
   asio::steady_timer m_timerPollInterval;
 
+  uint16_t m_cntReportTrigger; // m_choices.nReportInterval
+
   void Poll();
   void Signals( const boost::system::error_code&, int );
 
