@@ -28,16 +28,14 @@ namespace {
   static const std::string c_analog_in_path( "/sys/bus/iio/devices/iio:device0/in_voltage" );
 }
 
-AnalogIn::AnalogIn( uint16_t ix_ )
-: ix( ix_ )
-, path( c_analog_in_path + boost::lexical_cast<std::string>( ix_ ) + "_raw" )
+AnalogIn::AnalogIn( uint16_t ix )
+: path( c_analog_in_path + boost::lexical_cast<std::string>( ix ) + "_raw" )
 , value {}
 {
 }
 
 AnalogIn::AnalogIn( AnalogIn&& rhs )
-: ix( rhs.ix )
-, path( std::move( rhs.path ) )
+: path( std::move( rhs.path ) )
 , value( rhs.value )
 {}
 
@@ -52,7 +50,7 @@ uint16_t AnalogIn::Read( std::fstream& fs ) {
 
 AnalogChannels::AnalogChannels( const config::Values& choices ) {
   for ( uint16_t ix: choices.setAnalogInIx ) {
-    vAnalogIn.emplace_back( AnalogIn( ix ) );
+    mapAnalogIn.emplace( ix, AnalogIn( ix ) );
   }
 }
 
@@ -60,7 +58,8 @@ void AnalogChannels::Process() {
 
   uint16_t value;
 
-  for ( AnalogIn& ain: vAnalogIn ) {
+  for ( mapAnalogIn_t::value_type& vt: mapAnalogIn ) {
+    AnalogIn& ain( vt.second );
     value = ain.Read( fs );
   }
 }
@@ -69,7 +68,9 @@ void AnalogChannels::ComposeMessage( std::string& sMessage ) {
 
   bool bComma( false );
 
-  for ( AnalogIn& ain: vAnalogIn ) {
+  for ( mapAnalogIn_t::value_type& vt: mapAnalogIn ) {
+
+    AnalogIn& ain( vt.second );
 
     if ( bComma ) sMessage += ',';
     else bComma = true;
@@ -77,7 +78,7 @@ void AnalogChannels::ComposeMessage( std::string& sMessage ) {
     sMessage
       += std::string()
        + '"' + "ain"
-       + boost::lexical_cast<std::string>( ain.Ix() )
+       + boost::lexical_cast<std::string>( vt.first )
        + '"' + ':'
        + boost::lexical_cast<std::string>( ain.Last() )
       ;

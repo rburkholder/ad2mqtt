@@ -24,23 +24,21 @@
 
 #include <string>
 
-#include <vector>
+#include <unordered_map>
 
 #include "Config.hpp"
 
 class AnalogIn {
 public:
 
-  AnalogIn( uint16_t ix_ );
+  AnalogIn( uint16_t ix );
   AnalogIn( AnalogIn&& rhs );
 
   uint16_t Read( std::fstream& );
-  uint16_t Ix() const { return ix; }
   uint16_t Last() const { return value; }
 
 protected:
 private:
-  const uint16_t ix;
   const std::string path;
   uint16_t value;
 };
@@ -57,8 +55,8 @@ private:
 
   std::fstream fs;
 
-  using vAnalogIn_t = std::vector<AnalogIn>;
-  vAnalogIn_t vAnalogIn;
+  using mapAnalogIn_t = std::unordered_map<uint16_t,AnalogIn>;
+  mapAnalogIn_t mapAnalogIn;
 
 };
 
