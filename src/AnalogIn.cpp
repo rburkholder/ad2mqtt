@@ -56,13 +56,20 @@ AnalogChannels::AnalogChannels( const config::Values& choices ) {
   }
 }
 
-void AnalogChannels::Process( std::string& sMessage ) {
+void AnalogChannels::Process() {
 
   uint16_t value;
-  bool bComma( false );
 
   for ( AnalogIn& ain: vAnalogIn ) {
     value = ain.Read( fs );
+  }
+}
+
+void AnalogChannels::ComposeMessage( std::string& sMessage ) {
+
+  bool bComma( false );
+
+  for ( AnalogIn& ain: vAnalogIn ) {
 
     if ( bComma ) sMessage += ',';
     else bComma = true;
@@ -72,7 +79,7 @@ void AnalogChannels::Process( std::string& sMessage ) {
        + '"' + "ain"
        + boost::lexical_cast<std::string>( ain.Ix() )
        + '"' + ':'
-       + boost::lexical_cast<std::string>( value )
+       + boost::lexical_cast<std::string>( ain.Last() )
       ;
   }
 }

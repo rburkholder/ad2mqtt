@@ -50,7 +50,8 @@ private:
 class AnalogChannels {
 public:
   AnalogChannels( const config::Values& );
-  void Process( std::string& );
+  void Process();
+  void ComposeMessage( std::string& );
 protected:
 private:
 

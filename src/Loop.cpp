@@ -145,7 +145,8 @@ void Loop::Poll() {
 
     std::string sMessage;
 
-    m_AnalogChannels.Process( sMessage );
+    m_AnalogChannels.Process();
+    m_AnalogChannels.ComposeMessage( sMessage );
 
     const std::string sTopic = m_choices.mqtt.sTopic;
     sMessage = '{' + sMessage + '}';
