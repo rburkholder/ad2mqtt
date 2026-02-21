@@ -28,25 +28,27 @@ namespace {
   static const std::string c_analog_in_path( "/sys/bus/iio/devices/iio:device0/in_voltage" );
 }
 
-AnalogIn::AnalogIn( uint16_t ix_ ) 
+AnalogIn::AnalogIn( uint16_t ix_ )
 : ix( ix_ )
+, path( c_analog_in_path + boost::lexical_cast<std::string>( ix_ ) + "_raw" )
 {
-  ss << c_analog_in_path << ix << "_raw";
 }
 
 AnalogIn::AnalogIn( AnalogIn&& rhs )
 : ix( rhs.ix )
-, ss( std::move( rhs.ss ) )
+, path( std::move( rhs.path ) )
 , fs( std::move( rhs.fs ) )
 {}
 
 uint16_t AnalogIn::Read() {
   uint16_t value;
-  fs.open( ss.str().c_str(), std::fstream::in );
+  fs.open( path, std::fstream::in );
   fs >> value;
   fs.close();
   return value;
 }
+
+// =======
 
 AnalogChannels::AnalogChannels( const config::Values& choices ) {
   for ( uint16_t ix: choices.setAnalogInIx ) {
@@ -65,9 +67,10 @@ void AnalogChannels::Process( std::string& sMessage ) {
     if ( bComma ) sMessage += ',';
     else bComma = true;
 
-    sMessage 
-      += "\"ain" 
-       + boost::lexical_cast<std::string>( ain.Ix() ) 
+    sMessage
+      += std::string()
+       + '"' + "ain"
+       + boost::lexical_cast<std::string>( ain.Ix() )
        + '"' + ':'
        + boost::lexical_cast<std::string>( value )
       ;

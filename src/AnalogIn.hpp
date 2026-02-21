@@ -20,7 +20,6 @@
  */
 
 #include <cstdint>
-#include <sstream>
 #include <fstream>
 
 #include <string>
@@ -41,9 +40,11 @@ public:
 protected:
 private:
   const uint16_t ix;
-  std::stringstream ss;
+  const std::string path;
   std::fstream fs;
 };
+
+// =======
 
 class AnalogChannels {
 public:
