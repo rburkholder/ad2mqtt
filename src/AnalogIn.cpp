@@ -31,16 +31,17 @@ namespace {
 AnalogIn::AnalogIn( uint16_t ix_ )
 : ix( ix_ )
 , path( c_analog_in_path + boost::lexical_cast<std::string>( ix_ ) + "_raw" )
+, value {}
 {
 }
 
 AnalogIn::AnalogIn( AnalogIn&& rhs )
 : ix( rhs.ix )
 , path( std::move( rhs.path ) )
+, value( rhs.value )
 {}
 
 uint16_t AnalogIn::Read( std::fstream& fs ) {
-  uint16_t value;
   fs.open( path, std::fstream::in );
   fs >> value;
   fs.close();
