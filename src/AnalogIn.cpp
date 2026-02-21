@@ -37,10 +37,9 @@ AnalogIn::AnalogIn( uint16_t ix_ )
 AnalogIn::AnalogIn( AnalogIn&& rhs )
 : ix( rhs.ix )
 , path( std::move( rhs.path ) )
-, fs( std::move( rhs.fs ) )
 {}
 
-uint16_t AnalogIn::Read() {
+uint16_t AnalogIn::Read( std::fstream& fs ) {
   uint16_t value;
   fs.open( path, std::fstream::in );
   fs >> value;
@@ -62,7 +61,7 @@ void AnalogChannels::Process( std::string& sMessage ) {
   bool bComma( false );
 
   for ( AnalogIn& ain: vAnalogIn ) {
-    value = ain.Read();
+    value = ain.Read( fs );
 
     if ( bComma ) sMessage += ',';
     else bComma = true;

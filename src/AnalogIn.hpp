@@ -34,14 +34,13 @@ public:
   AnalogIn( uint16_t ix_ );
   AnalogIn( AnalogIn&& rhs );
 
-  uint16_t Read();
+  uint16_t Read( std::fstream& );
   uint16_t Ix() const { return ix; }
 
 protected:
 private:
   const uint16_t ix;
   const std::string path;
-  std::fstream fs;
 };
 
 // =======
@@ -53,10 +52,13 @@ public:
 protected:
 private:
 
+  std::fstream fs;
+
   using vAnalogIn_t = std::vector<AnalogIn>;
   vAnalogIn_t vAnalogIn;
 
   using vValue_t = std::vector<uint16_t>;
   vValue_t vValue;
+
 };
 
