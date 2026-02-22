@@ -147,7 +147,7 @@ bool Load( const std::string& sFileName, Values& values ) {
       bOk &= parse<uint16_t>( sFileName, vm, sValue_PollInterval, values.nPollInterval );
       if ( 10 > values.nPollInterval ) {
         BOOST_LOG_TRIVIAL(error)
-          << "polling interval " << values.nPollInterval
+          << sValue_PollInterval << " (" << values.nPollInterval << ")"
           << " must be 10 or higher";
         bOk = false;
       }
@@ -155,7 +155,7 @@ bool Load( const std::string& sFileName, Values& values ) {
       bOk &= parse<uint16_t>( sFileName, vm, sValue_ReportInterval, values.nReportInterval );
       if ( 0 == values.nReportInterval ) {
         BOOST_LOG_TRIVIAL(error)
-          << "reporting interval " << values.nPollInterval
+          << sValue_ReportInterval << " (" << values.nPollInterval << ")"
           << " must be greater than 0";
         bOk = false;
       }
@@ -169,6 +169,14 @@ bool Load( const std::string& sFileName, Values& values ) {
       //bOk &= parse<setAnalogInIx_t>( sFileName, vm, sValue_AnalogInIx, values.set_ani );
 
       bOk &= parse<uint16_t>( sFileName, vm, sValue_AInTemperatureIx, values.ixAInTemperature );
+
+      setAnalogInIx_t::const_iterator iterIx = values.setAnalogInIx.find( values.ixAInTemperature );
+      if ( values.setAnalogInIx.end() == iterIx ) {
+        BOOST_LOG_TRIVIAL(error)
+          << sValue_AInTemperatureIx << " is " << values.ixAInTemperature
+          << " but needs to be in set of " << sValue_AnalogInIx;
+        bOk = false;
+      }
 
       bOk &= parse<std::string>( sFileName, vm, sValue_Gas_GPIO,  values.sGasGPIO );
       bOk &= parse<uint16_t>(    sFileName, vm, sValue_Gas_Upper, values.nGasUpper );
