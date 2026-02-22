@@ -21,12 +21,17 @@
 
 #include <boost/log/trivial.hpp>
 
+#include <gpiod.hpp>
+
 #include "GasValve.hpp"
 
 GasValve::GasValve( const std::string& gpio, uint16_t upper, uint16_t lower )
 : m_nUpper( upper ), m_nLower( lower )
 , m_sGPIO( gpio )
 {
+
+  BOOST_LOG_TRIVIAL(info) << ::gpiod::api_version();
+
   m_fHysteresis_jump =
     [this]( uint16_t value ){ // Hysteresis_start
       if ( m_nLower > value ) {

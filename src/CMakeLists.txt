@@ -52,6 +52,8 @@ target_link_libraries(
   ${PROJECT_NAME}
     libou_mqtt.a
     libpaho-mqtt3c.a
+    libgpiodcxx.a
+    libgpiod.a
     ${Boost_LIBRARIES}
   )
 
