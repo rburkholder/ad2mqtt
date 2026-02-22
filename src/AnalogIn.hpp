@@ -50,6 +50,7 @@ public:
   AnalogChannels( const config::Values& );
   void Process();
   void ComposeMessage( std::string& );
+  uint16_t operator[]( uint16_t ) const;
 protected:
 private:
 

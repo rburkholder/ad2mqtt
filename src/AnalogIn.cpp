@@ -19,6 +19,8 @@
  * Created: 2025/12/11 22:01:23
  */
 
+#include <cassert>
+
 #include <boost/lexical_cast.hpp>
 
 #include "AnalogIn.hpp"
@@ -62,6 +64,13 @@ void AnalogChannels::Process() {
     AnalogIn& ain( vt.second );
     value = ain.Read( fs );
   }
+
+}
+
+uint16_t AnalogChannels::operator[]( uint16_t ix ) const {
+  mapAnalogIn_t::const_iterator iter( mapAnalogIn.find( ix ) );
+  assert( mapAnalogIn.end() != iter );
+  return iter->second.Last();
 }
 
 void AnalogChannels::ComposeMessage( std::string& sMessage ) {
