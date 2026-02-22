@@ -168,6 +168,11 @@ bool Load( const std::string& sFileName, Values& values ) {
       }
       //bOk &= parse<setAnalogInIx_t>( sFileName, vm, sValue_AnalogInIx, values.set_ani );
 
+      values.setAnalogInIx.clear();
+      for ( const auto ix: vAnalogInIx ) {
+        values.setAnalogInIx.insert( ix );
+      }
+
       bOk &= parse<uint16_t>( sFileName, vm, sValue_AInTemperatureIx, values.ixAInTemperature );
 
       setAnalogInIx_t::const_iterator iterIx = values.setAnalogInIx.find( values.ixAInTemperature );
@@ -192,11 +197,6 @@ bool Load( const std::string& sFileName, Values& values ) {
   catch( std::exception& e ) {
     BOOST_LOG_TRIVIAL(error) << sFileName << " parse error: " << e.what();
     bOk = false;
-  }
-
-  values.setAnalogInIx.clear();
-  for ( const auto ix: vAnalogInIx ) {
-    values.setAnalogInIx.insert( ix );
   }
 
   return bOk;
