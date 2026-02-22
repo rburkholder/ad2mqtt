@@ -22,6 +22,7 @@ set(
   file_hpp
     AnalogIn.hpp
     Config.hpp
+    GasValve.hpp
     Loop.hpp
   )
 
@@ -29,6 +30,7 @@ set(
   file_cpp
     AnalogIn.cpp
     Config.cpp
+    GasValve.cpp
     Loop.cpp
     main.cpp
   )

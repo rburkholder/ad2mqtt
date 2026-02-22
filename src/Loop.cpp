@@ -45,6 +45,7 @@ Loop::Loop( const config::Values& choices, asio::io_context& io_context )
 , m_timerPollInterval( io_context )
 , m_AnalogChannels( choices )
 , m_cntReportTrigger( choices.nReportInterval )
+, m_gas_valve( choices.sGasGPIO, choices.nGasUpper, choices.nGasLower )
 {
 /*
   int rc;
@@ -145,6 +146,7 @@ void Loop::Poll() {
   try {
 
     m_AnalogChannels.Process();
+    m_gas_valve.Process( m_AnalogChannels[ m_choices.ixAInTemperature ] );
 
     assert( 0 < m_cntReportTrigger );
     --m_cntReportTrigger;
