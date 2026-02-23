@@ -41,9 +41,10 @@ public:
     .set_consumer( "gas_valve_hi" ) // A label for the consumer
     .add_line_settings(
       line_offset,
-      ::gpiod::line_settings().set_direction(
-        ::gpiod::line::direction::OUTPUT ) // Set as output
-      )
+      ::gpiod::line_settings()
+        .set_direction( ::gpiod::line::direction::OUTPUT ) // Set as output
+        .set_active_low( true )
+     )
     .do_request() // Request the line(s)
   )
   {}
