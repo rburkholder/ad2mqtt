@@ -23,7 +23,12 @@
 
 #include <cstdint>
 #include <string>
+#include <memory>
 #include <functional>
+
+namespace gpiod {
+  class line_request;
+}
 
 class GasValve {
 public:
@@ -43,6 +48,9 @@ private:
 
   using fHysteresis_t = std::function<void(uint16_t)>;
   fHysteresis_t m_fHysteresis_jump;
+
+  using pLineRequest_t = std::unique_ptr<gpiod::line_request>;
+  pLineRequest_t m_pLineRequest;
 
   void Hysteresis_gt( uint16_t );
   void Hysteresis_lt( uint16_t );
