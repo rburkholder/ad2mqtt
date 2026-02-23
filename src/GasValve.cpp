@@ -53,15 +53,18 @@ GasValve::GasValve( const std::string& gpio, uint16_t upper, uint16_t lower )
 
   try {
     ::gpiod::chip chip( chip_path );
-    auto line_request = chip.prepare_request()
-      .set_consumer("gas_valve_hi") // A label for the consumer
-      .add_line_settings( line_offset, ::gpiod::line_settings()
-        .set_direction( ::gpiod::line::direction::OUTPUT ) // Set as output
-        .set_output_value( ::gpiod::line::value::ACTIVE )) // Set initial value (HIGH)
+    auto line_request =
+       chip.prepare_request()
+      .set_consumer( "gas_valve_hi" ) // A label for the consumer
+      .add_line_settings(
+        line_offset,
+        ::gpiod::line_settings().set_direction(
+          ::gpiod::line::direction::OUTPUT ) // Set as output
+        )
       .do_request(); // Request the line(s)
-    m_pLineRequest = std::make_unique<gpiod::line_request>( std::move( line_request ) );
-    m_pLineRequest->set_value( line_offset, ::gpiod::line::value::ACTIVE);
+    line_request.set_value( line_offset, ::gpiod::line::value::ACTIVE);
     usleep( 1000000 ); // Wait for 1,000,000 microseconds (0.1 seconds)
+    m_pLineRequest = std::make_unique<gpiod::line_request>( std::move( line_request ) );
   }
   catch ( const std::exception& e ) {
     BOOST_LOG_TRIVIAL(error) << "GPIO error: " << e.what() << std::endl;
