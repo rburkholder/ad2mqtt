@@ -104,7 +104,7 @@ void GasValve::Process( uint16_t value ) {
 
 void GasValve::Hysteresis_gt( uint16_t value ) {
   if ( m_nLower > value ) {
-    BOOST_LOG_TRIVIAL(trace) << "gas valve enable - " << m_nLower << " > " << value << ")";
+    BOOST_LOG_TRIVIAL(trace) << "gas valve enable (" << m_nLower << " > " << value << ")";
     m_pGasValveState->Hi();
     m_fHysteresis_jump = [this]( uint16_t value ){ Hysteresis_lt( value ); };
   }
@@ -112,7 +112,7 @@ void GasValve::Hysteresis_gt( uint16_t value ) {
 
 void GasValve::Hysteresis_lt( uint16_t value ) {
   if ( m_nUpper < value ) {
-    BOOST_LOG_TRIVIAL(trace) << "gas valve disable - " << m_nUpper << " < " << value << ")";
+    BOOST_LOG_TRIVIAL(trace) << "gas valve disable (" << m_nUpper << " < " << value << ")";
     m_pGasValveState->Lo();
     m_fHysteresis_jump = [this]( uint16_t value ){ Hysteresis_gt( value ); };
   }
