@@ -26,9 +26,7 @@
 #include <memory>
 #include <functional>
 
-namespace gpiod {
-  class line_request;
-}
+class GasValveState;
 
 class GasValve {
 public:
@@ -49,8 +47,8 @@ private:
   using fHysteresis_t = std::function<void(uint16_t)>;
   fHysteresis_t m_fHysteresis_jump;
 
-  using pLineRequest_t = std::unique_ptr<gpiod::line_request>;
-  pLineRequest_t m_pLineRequest;
+  using pGasValveState_t = std::unique_ptr<GasValveState>;
+  pGasValveState_t m_pGasValveState;
 
   void Hysteresis_gt( uint16_t );
   void Hysteresis_lt( uint16_t );
