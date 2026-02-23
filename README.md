@@ -54,7 +54,7 @@ mqtt_topic = ad
 
 poll_interval = 1
 
-# valud values: 0 - 6
+# valid values: 0 - 6
 analog_in_ix = 0
 analog_in_ix = 1
 analog_in_ix = 2
