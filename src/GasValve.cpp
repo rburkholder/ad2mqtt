@@ -19,7 +19,7 @@
  * Created: 2026/02/21 18:47:09
  */
 
-#include <unistd.h> // For usleep
+//#include <unistd.h> // For usleep
 
 #include <boost/log/trivial.hpp>
 
@@ -29,6 +29,7 @@
 
 namespace {
   static const std::filesystem::path chip_path("/dev/gpiochip3");
+  // based upon: gpioinfo -c gpiochip3
   static const ::gpiod::line::offset line_offset = 5;
 }
 
@@ -37,8 +38,8 @@ public:
   GasValveState()
   : chip( chip_path )
   , lr(
-     chip.prepare_request()
-    .set_consumer( "gas_valve_hi" ) // A label for the consumer
+     chip.prepare_request() // https://libgpiod.readthedocs.io/en/latest/cpp_chip.html
+    .set_consumer( "gas_valve_enable" ) // A label for the consumer in gpioinfo
     .add_line_settings(
       line_offset,
       ::gpiod::line_settings()
@@ -63,8 +64,8 @@ public:
   }
 protected:
 private:
-  ::gpiod::chip chip;
-  ::gpiod::line_request lr;
+  ::gpiod::chip chip; // declare before line_request
+  ::gpiod::line_request lr; // declare after chip
 };
 
 GasValve::GasValve( const std::string& gpio, uint16_t upper, uint16_t lower )
@@ -103,7 +104,7 @@ void GasValve::Process( uint16_t value ) {
 
 void GasValve::Hysteresis_gt( uint16_t value ) {
   if ( m_nLower > value ) {
-    BOOST_LOG_TRIVIAL(trace) << "gas valve on (" << value << ")";
+    BOOST_LOG_TRIVIAL(trace) << "gas valve enable - " << m_nLower << " > " << value << ")";
     m_pGasValveState->Hi();
     m_fHysteresis_jump = [this]( uint16_t value ){ Hysteresis_lt( value ); };
   }
@@ -111,7 +112,7 @@ void GasValve::Hysteresis_gt( uint16_t value ) {
 
 void GasValve::Hysteresis_lt( uint16_t value ) {
   if ( m_nUpper < value ) {
-    BOOST_LOG_TRIVIAL(trace) << "gas valve off (" << value << ")";
+    BOOST_LOG_TRIVIAL(trace) << "gas valve disable - " << m_nUpper << " < " << value << ")";
     m_pGasValveState->Lo();
     m_fHysteresis_jump = [this]( uint16_t value ){ Hysteresis_gt( value ); };
   }
