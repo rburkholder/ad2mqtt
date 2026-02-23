@@ -25,12 +25,17 @@
 
 #include "GasValve.hpp"
 
+namespace {
+  static const std::filesystem::path chip_path("/dev/gpiochip3");
+  static const ::gpiod::line::offset line_offset = 5;
+}
+
 GasValve::GasValve( const std::string& gpio, uint16_t upper, uint16_t lower )
 : m_nUpper( upper ), m_nLower( lower )
 , m_sGPIO( gpio )
 {
 
-  BOOST_LOG_TRIVIAL(info) << ::gpiod::api_version();
+  BOOST_LOG_TRIVIAL(info) << "gpio version = " << ::gpiod::api_version();
 
   m_fHysteresis_jump =
     [this]( uint16_t value ){ // Hysteresis_start
@@ -43,9 +48,36 @@ GasValve::GasValve( const std::string& gpio, uint16_t upper, uint16_t lower )
         }
       }
     };
+
+  try {
+    ::gpiod::chip chip( chip_path );
+    auto request = chip.prepare_request()
+      .set_consumer("gas_valve_hi") // A label for the consumer
+      .add_line_settings(line_offset, ::gpiod::line_settings()
+      .set_direction(::gpiod::line::direction::OUTPUT) // Set as output
+      .set_output_value(::gpiod::line::value::ACTIVE)) // Set initial value (HIGH)
+      .do_request(); // Request the line(s)
+  }
+  catch ( const std::exception& e ) {
+    BOOST_LOG_TRIVIAL(error) << "GPIO error: " << e.what() << std::endl;
+  }
+
 }
 
-GasValve::~GasValve() {}
+GasValve::~GasValve() {
+  try {
+    ::gpiod::chip chip( chip_path );
+    auto request = chip.prepare_request()
+      .set_consumer("gas_valve_lo") // A label for the consumer
+      .add_line_settings(line_offset, ::gpiod::line_settings()
+      .set_direction(::gpiod::line::direction::OUTPUT) // Set as output
+      .set_output_value(::gpiod::line::value::INACTIVE)) // Set initial value (HIGH)
+      .do_request(); // Request the line(s)
+  }
+  catch ( const std::exception& e ) {
+    BOOST_LOG_TRIVIAL(error) << "GPIO error: " << e.what() << std::endl;
+  }
+}
 
 void GasValve::Process( uint16_t value ) {
   m_fHysteresis_jump( value );
