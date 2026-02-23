@@ -82,7 +82,7 @@ Loop::Loop( const config::Values& choices, asio::io_context& io_context )
     throw e;
   }
 
-  std::cout << "ctrl-c to end" << std::endl;
+  BOOST_LOG_TRIVIAL(info) << "ctrl-c to end" << std::endl;
 
   asio::post( m_io_context, std::bind( &Loop::Poll, this ) );
 
