@@ -59,9 +59,9 @@ GasValve::GasValve( const std::string& gpio, uint16_t upper, uint16_t lower )
         .set_direction( ::gpiod::line::direction::OUTPUT ) // Set as output
         .set_output_value( ::gpiod::line::value::ACTIVE )) // Set initial value (HIGH)
       .do_request(); // Request the line(s)
+    m_pLineRequest = std::make_unique<gpiod::line_request>( std::move( line_request ) );
     m_pLineRequest->set_value( line_offset, ::gpiod::line::value::ACTIVE);
     usleep( 1000000 ); // Wait for 1,000,000 microseconds (0.1 seconds)
-    m_pLineRequest = std::make_unique<gpiod::line_request>( std::move( line_request ) );
   }
   catch ( const std::exception& e ) {
     BOOST_LOG_TRIVIAL(error) << "GPIO error: " << e.what() << std::endl;
