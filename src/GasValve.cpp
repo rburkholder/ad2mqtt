@@ -19,6 +19,8 @@
  * Created: 2026/02/21 18:47:09
  */
 
+#include <unistd.h> // For usleep
+
 #include <boost/log/trivial.hpp>
 
 #include <gpiod.hpp>
@@ -57,6 +59,7 @@ GasValve::GasValve( const std::string& gpio, uint16_t upper, uint16_t lower )
         .set_direction( ::gpiod::line::direction::OUTPUT ) // Set as output
         .set_output_value( ::gpiod::line::value::ACTIVE )) // Set initial value (HIGH)
       .do_request(); // Request the line(s)
+    usleep( 1000000 ); // Wait for 1,000,000 microseconds (0.1 seconds)
     m_pLineRequest = std::make_unique<gpiod::line_request>( std::move( line_request ) );
   }
   catch ( const std::exception& e ) {
