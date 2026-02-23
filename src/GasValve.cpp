@@ -50,7 +50,7 @@ public:
   {}
 
   ~GasValveState() {
-    lr.set_value( line_offset, ::gpiod::line::value::INACTIVE);
+    Lo();
     lr.release();
   }
 
@@ -87,9 +87,9 @@ GasValve::GasValve( const std::string& gpio, uint16_t upper, uint16_t lower )
     };
 
   m_pGasValveState = std::make_unique<GasValveState>();
-  m_pGasValveState->Hi();
-  usleep( 1000000 ); // Wait for 1,000,000 microseconds (0.1 seconds)
-  m_pGasValveState->Lo();
+  //m_pGasValveState->Hi();
+  //usleep( 1000000 ); // Wait for 1,000,000 microseconds (0.1 seconds)
+  m_pGasValveState->Lo(); // initialize to off
 
 }
 
