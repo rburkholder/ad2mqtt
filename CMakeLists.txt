@@ -10,7 +10,7 @@ add_definitions(-pthread)
 # beaglebone when loaded with AM335x 12.2 has gcc-12 which supports 17
 # https://www.beagleboard.org/distros/am335x-12-2-2023-10-07-4gb-emmc-iot-flasher
 set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_COMPILER_ARCHITECTURE_ID "x64")
+#set(CMAKE_CXX_COMPILER_ARCHITECTURE_ID "x64")
 
 add_subdirectory(src)
 
