@@ -51,15 +51,18 @@ public:
   {}
 
   ~GasValveState() {
-    Lo();
+    Enable();
     lr.release();
   }
 
-  void Hi() {
+  // relay is energized, opening n/c circuit
+  void Disable() {
     lr.set_value( line_offset, ::gpiod::line::value::ACTIVE);
   }
 
-  void Lo() {
+  // quiescent state is gas valve enable, relay is de-energized (wire on n/c)
+  // protected by external safety thermostat
+  void Enable() {
     lr.set_value( line_offset, ::gpiod::line::value::INACTIVE);
   }
 protected:
@@ -90,7 +93,7 @@ GasValve::GasValve( const std::string& gpio, uint16_t upper, uint16_t lower )
   m_pGasValveState = std::make_unique<GasValveState>();
   //m_pGasValveState->Hi();
   //usleep( 1000000 ); // Wait for 1,000,000 microseconds (0.1 seconds)
-  m_pGasValveState->Lo(); // initialize to off
+  m_pGasValveState->Enable(); // initialize to enable
 
 }
 
@@ -104,8 +107,8 @@ void GasValve::Process( uint16_t value ) {
 
 void GasValve::Hysteresis_gt( uint16_t value ) {
   if ( m_nLower > value ) {
-    BOOST_LOG_TRIVIAL(trace) << "gas valve enable (" << m_nLower << " > " << value << ")";
-    m_pGasValveState->Hi();
+    BOOST_LOG_TRIVIAL(trace) << "gas valve enable  (" << m_nLower << " > " << value << ")";
+    m_pGasValveState->Enable();
     m_fHysteresis_jump = [this]( uint16_t value ){ Hysteresis_lt( value ); };
   }
 }
@@ -113,7 +116,7 @@ void GasValve::Hysteresis_gt( uint16_t value ) {
 void GasValve::Hysteresis_lt( uint16_t value ) {
   if ( m_nUpper < value ) {
     BOOST_LOG_TRIVIAL(trace) << "gas valve disable (" << m_nUpper << " < " << value << ")";
-    m_pGasValveState->Lo();
+    m_pGasValveState->Disable();
     m_fHysteresis_jump = [this]( uint16_t value ){ Hysteresis_gt( value ); };
   }
 }
