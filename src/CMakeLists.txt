@@ -3,18 +3,14 @@ cmake_minimum_required (VERSION 3.13)
 
 PROJECT(ad2mqtt)
 
-# https://cmake.org/cmake/help/v3.6/module/FindBoost.html
 set(Boost_USE_STATIC_LIBS ON)
 set(Boost_USE_MULTITHREADED ON)
 set(Boost_USE_STATIC_RUNTIME OFF)
 #set(Boost_DEBUG 1)
-#set(Boost_REALPATH ON)
-#set(BOOST_ROOT "/usr/local")
 #set(Boost_DETAILED_FAILURE_MSG ON)
-#set(BOOST_INCLUDEDIR "/usr/local/include/boost")
-#set(BOOST_LIBRARYDIR "/usr/local/lib")
 
-find_package(Boost CONFIG REQUIRED COMPONENTS program_options thread filesystem log)
+# https://cmake.org/cmake/help/latest/module/FindBoost.html#boost-cmake
+find_package(Boost CONFIG REQUIRED COMPONENTS program_options log)
 
 set(
   file_hpp
