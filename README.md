@@ -1,28 +1,13 @@
 # ad2mqtt
-Communicate Beagle analog values to MQTT
+Communicate Beagle analog values to MQTT & act as thermostat for hydronic furnace gas valve
 
-Packages to be installed (all platforms):
+Packages to be installed:
 ```
-sudo apt install libpaho-mqtt-dev
-```
-
-Packages (beaglebone) simply use the 'debian generic' section below, the other two sections are here as a reference:
-```
-# debian version 12.2 (not available yet)
-sudo apt install libboost-filesystem1.81-dev
-sudo apt install libboost-log1.81-dev
-sudo apt install libboost-program-options1.81-dev
-sudo apt install libboost-thread1.81-dev
-# debian version 11.7 (as of 2023/10/08)
-sudo apt install libboost-filesystem1.74-dev
-sudo apt install libboost-log1.74-dev
-sudo apt install libboost-program-options1.74-dev
-sudo apt install libboost-thread1.74-dev
-# debian generic
-sudo apt install libboost-filesystem-dev
-sudo apt install libboost-log-dev
-sudo apt install libboost-program-options-dev
-sudo apt install libboost-thread-dev
+sudo apt install --no-install-recommends libpaho-mqtt-dev
+sudo apt install --no-install-recommends libboost-log-dev
+sudo apt install --no-install-recommends libboost-program-options-dev
+sudo apt install --no-install-recommends cmake
+sudo apt install --no-install-recommends ninja-build
 ```
 
 To Build statically linked application:
@@ -52,12 +37,26 @@ mqtt_username = admin
 mqtt_password = password
 mqtt_topic = ad
 
-poll_interval = 1
+# milliseconds
+poll_interval = 1000
+report_interval = 1
 
 # valid values: 0 - 6
 analog_in_ix = 0
 analog_in_ix = 1
 analog_in_ix = 2
+
+ain_temperature_ix = 1
+
+# relay port 1
+gas_gpio = P9_17 [spi0_cs0]
+gas_upper = 1883
+gas_lower = 1860
+
+# relay port 4
+pump_gpio = P9_11 [uart4_rxd]
+pump_upper = 400
+pump_lower = 200
 
 ```
 
