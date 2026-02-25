@@ -49,7 +49,7 @@ class AnalogChannels {
 public:
   AnalogChannels( const config::Values& );
   void Process();
-  void ComposeMessage( std::string& );
+  void SerializeKeyValues( std::string& );
   uint16_t operator[]( uint16_t ) const;
 protected:
 private:

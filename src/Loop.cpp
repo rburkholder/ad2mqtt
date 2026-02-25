@@ -153,7 +153,7 @@ void Loop::Poll() {
     if ( 0 == m_cntReportTrigger ) {
 
       std::string sMessage( "{" );
-      m_AnalogChannels.ComposeMessage( sMessage );
+      m_AnalogChannels.SerializeKeyValues( sMessage );
       sMessage += '}';
 
       m_pMqtt->Publish(

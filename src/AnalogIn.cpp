@@ -58,11 +58,9 @@ AnalogChannels::AnalogChannels( const config::Values& choices ) {
 
 void AnalogChannels::Process() {
 
-  uint16_t value;
-
   for ( mapAnalogIn_t::value_type& vt: mapAnalogIn ) {
     AnalogIn& ain( vt.second );
-    value = ain.Read( fs );
+    ain.Read( fs );
   }
 
 }
@@ -73,7 +71,7 @@ uint16_t AnalogChannels::operator[]( uint16_t ix ) const {
   return iter->second.Last();
 }
 
-void AnalogChannels::ComposeMessage( std::string& sMessage ) {
+void AnalogChannels::SerializeKeyValues( std::string& sMessage ) {
 
   bool bComma( false );
 
