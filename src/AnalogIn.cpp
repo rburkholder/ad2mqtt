@@ -31,43 +31,43 @@ namespace {
 }
 
 AnalogIn::AnalogIn( uint16_t ix )
-: path( c_analog_in_path + boost::lexical_cast<std::string>( ix ) + "_raw" )
-, value {}
+: m_path( c_analog_in_path + boost::lexical_cast<std::string>( ix ) + "_raw" )
+, m_value {}
 {
 }
 
 AnalogIn::AnalogIn( AnalogIn&& rhs )
-: path( std::move( rhs.path ) )
-, value( rhs.value )
+: m_path( std::move( rhs.m_path ) )
+, m_value( rhs.m_value )
 {}
 
 uint16_t AnalogIn::Read( std::fstream& fs ) {
-  fs.open( path, std::fstream::in );
-  fs >> value;
+  fs.open( m_path, std::fstream::in );
+  fs >> m_value;
   fs.close();
-  return value;
+  return m_value;
 }
 
 // =======
 
 AnalogChannels::AnalogChannels( const config::Values& choices ) {
   for ( uint16_t ix: choices.setAnalogInIx ) {
-    mapAnalogIn.emplace( ix, AnalogIn( ix ) );
+    m_mapAnalogIn.emplace( ix, AnalogIn( ix ) );
   }
 }
 
 void AnalogChannels::Process() {
 
-  for ( mapAnalogIn_t::value_type& vt: mapAnalogIn ) {
+  for ( mapAnalogIn_t::value_type& vt: m_mapAnalogIn ) {
     AnalogIn& ain( vt.second );
-    ain.Read( fs );
+    ain.Read( m_fs );
   }
 
 }
 
 uint16_t AnalogChannels::operator[]( uint16_t ix ) const {
-  mapAnalogIn_t::const_iterator iter( mapAnalogIn.find( ix ) );
-  assert( mapAnalogIn.end() != iter );
+  mapAnalogIn_t::const_iterator iter( m_mapAnalogIn.find( ix ) );
+  assert( m_mapAnalogIn.end() != iter );
   return iter->second.Last();
 }
 
@@ -75,7 +75,7 @@ void AnalogChannels::SerializeKeyValues( std::string& sMessage ) {
 
   bool bComma( false );
 
-  for ( mapAnalogIn_t::value_type& vt: mapAnalogIn ) {
+  for ( mapAnalogIn_t::value_type& vt: m_mapAnalogIn ) {
 
     AnalogIn& ain( vt.second );
 

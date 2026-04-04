@@ -35,12 +35,12 @@ public:
   AnalogIn( AnalogIn&& rhs );
 
   uint16_t Read( std::fstream& );
-  uint16_t Last() const { return value; }
+  uint16_t Last() const { return m_value; }
 
 protected:
 private:
-  const std::string path;
-  uint16_t value;
+  const std::string m_path;
+  uint16_t m_value;
 };
 
 // =======
@@ -54,10 +54,10 @@ public:
 protected:
 private:
 
-  std::fstream fs;
+  std::fstream m_fs;
 
   using mapAnalogIn_t = std::unordered_map<uint16_t,AnalogIn>;
-  mapAnalogIn_t mapAnalogIn;
+  mapAnalogIn_t m_mapAnalogIn;
 
 };
 
