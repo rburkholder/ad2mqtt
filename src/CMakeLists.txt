@@ -17,6 +17,7 @@ set(
     AnalogIn.hpp
     Config.hpp
     GasValve.hpp
+    GpioState.hpp
     Loop.hpp
   )
 
@@ -25,6 +26,7 @@ set(
     AnalogIn.cpp
     Config.cpp
     GasValve.cpp
+    GpioState.cpp
     Loop.cpp
     main.cpp
   )
