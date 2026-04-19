@@ -39,7 +39,7 @@ public:
   : chip( chip_path )
   , lr(
      chip.prepare_request() // https://libgpiod.readthedocs.io/en/latest/cpp_chip.html
-    .set_consumer( "gas_valve_enable" ) // A label for the consumer in gpioinfo
+    .set_consumer( "heat_call_enable" ) // A label for the consumer in gpioinfo
     .add_line_settings(
       line_offset,
       ::gpiod::line_settings()
@@ -51,25 +51,28 @@ public:
   {}
 
   ~GasValveState() {
-    Enable();
+    Disable();
     lr.release();
   }
 
-  // relay is energized, opening n/c circuit
+  // quiescent state is gas valve disable, relay is de-energized (wire on n/o)
+  // relay is de-energized, n/o circuit - default no-power state
   void Disable() {
-    lr.set_value( line_offset, ::gpiod::line::value::ACTIVE);
+    lr.set_value( line_offset, ::gpiod::line::value::INACTIVE);
   }
 
-  // quiescent state is gas valve enable, relay is de-energized (wire on n/c)
   // protected by external safety thermostat
+  // energize relay so n/o contacts close, enables thermostats
   void Enable() {
-    lr.set_value( line_offset, ::gpiod::line::value::INACTIVE);
+    lr.set_value( line_offset, ::gpiod::line::value::ACTIVE);
   }
 protected:
 private:
   ::gpiod::chip chip; // declare before line_request
   ::gpiod::line_request lr; // declare after chip
 };
+
+// ------
 
 GasValve::GasValve( const std::string& gpio, uint16_t upper, uint16_t lower )
 : m_nUpper( upper ), m_nLower( lower )
@@ -93,7 +96,7 @@ GasValve::GasValve( const std::string& gpio, uint16_t upper, uint16_t lower )
   m_pGasValveState = std::make_unique<GasValveState>();
   //m_pGasValveState->Hi();
   //usleep( 1000000 ); // Wait for 1,000,000 microseconds (0.1 seconds)
-  m_pGasValveState->Enable(); // initialize to enable
+  m_pGasValveState->Disable(); // wait until we know water temperature
 
 }
 
@@ -107,7 +110,7 @@ void GasValve::Process( uint16_t value ) {
 
 void GasValve::Hysteresis_gt( uint16_t value ) {
   if ( m_nLower > value ) {
-    BOOST_LOG_TRIVIAL(trace) << "gas valve enable  (" << m_nLower << " > " << value << ")";
+    BOOST_LOG_TRIVIAL(trace) << "heat call enable  (" << m_nLower << " > " << value << ")";
     m_pGasValveState->Enable();
     m_fHysteresis_jump = [this]( uint16_t value ){ Hysteresis_lt( value ); };
   }
@@ -115,7 +118,7 @@ void GasValve::Hysteresis_gt( uint16_t value ) {
 
 void GasValve::Hysteresis_lt( uint16_t value ) {
   if ( m_nUpper < value ) {
-    BOOST_LOG_TRIVIAL(trace) << "gas valve disable (" << m_nUpper << " < " << value << ")";
+    BOOST_LOG_TRIVIAL(trace) << "heat call disable (" << m_nUpper << " < " << value << ")";
     m_pGasValveState->Disable();
     m_fHysteresis_jump = [this]( uint16_t value ){ Hysteresis_gt( value ); };
   }
