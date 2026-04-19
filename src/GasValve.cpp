@@ -84,10 +84,12 @@ GasValve::GasValve( const std::string& gpio, uint16_t upper, uint16_t lower )
   m_fHysteresis_jump =
     [this]( uint16_t value ){ // Hysteresis_start
       if ( m_nLower > value ) {
+        BOOST_LOG_TRIVIAL(trace) << "heat call enable  (" << m_nLower << " > " << value << ") - init";
         m_fHysteresis_jump = [this]( uint16_t value ){ Hysteresis_lt( value ); };
       }
       else {
         if ( m_nUpper < value ) {
+          BOOST_LOG_TRIVIAL(trace) << "heat call disable (" << m_nUpper << " < " << value << ") - init";
           m_fHysteresis_jump = [this]( uint16_t value ){ Hysteresis_gt( value ); };
         }
       }
