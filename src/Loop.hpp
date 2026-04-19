@@ -29,6 +29,7 @@
 
 #include "AnalogIn.hpp"
 #include "GasValve.hpp"
+#include "Pump.hpp"
 
 namespace config {
   class Values;
@@ -70,6 +71,7 @@ private:
   uint16_t m_cntReportTrigger; // m_choices.nReportInterval
 
   GasValve m_gas_valve;
+  Pump m_pump;
 
   void Poll();
   void Signals( const boost::system::error_code&, int );

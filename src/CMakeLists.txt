@@ -19,6 +19,7 @@ set(
     GasValve.hpp
     GpioState.hpp
     Loop.hpp
+    Pump.hpp
   )
 
 set(
@@ -29,6 +30,7 @@ set(
     GpioState.cpp
     Loop.cpp
     main.cpp
+    Pump.cpp
   )
 
 add_executable(
