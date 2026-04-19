@@ -28,17 +28,19 @@ GasValve::GasValve( unsigned int gpio_line, uint16_t upper, uint16_t lower )
 : m_nUpper( upper ), m_nLower( lower )
 {
 
-  BOOST_LOG_TRIVIAL(info) << "gpio version = " << ::gpiod::api_version();
+  BOOST_LOG_TRIVIAL(info) << "gpio version = " << ::gpiod::api_version() << " (gas valve)";
 
   m_fHysteresis_jump =
     [this]( uint16_t value ){ // Hysteresis_start
       if ( m_nLower > value ) {
         BOOST_LOG_TRIVIAL(trace) << "heat call enable  (" << m_nLower << " > " << value << ") - init";
+        m_pGasValveState->RelayOff();
         m_fHysteresis_jump = [this]( uint16_t value ){ Hysteresis_lt( value ); };
       }
       else {
         if ( m_nUpper < value ) {
           BOOST_LOG_TRIVIAL(trace) << "heat call disable (" << m_nUpper << " < " << value << ") - init";
+          m_pGasValveState->RelayOn();
           m_fHysteresis_jump = [this]( uint16_t value ){ Hysteresis_gt( value ); };
         }
       }
