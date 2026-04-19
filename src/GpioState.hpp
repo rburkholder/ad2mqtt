@@ -29,8 +29,8 @@ public:
   GpioState( const std::string& sName, unsigned int line_offset );
   ~GpioState();
 
-  void Enable();
-  void Disable();
+  void RelayOn();
+  void RelayOff();
 
 protected:
 private:

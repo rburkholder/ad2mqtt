@@ -34,20 +34,18 @@ GasValve::GasValve( unsigned int gpio_line, uint16_t upper, uint16_t lower )
     [this]( uint16_t value ){ // Hysteresis_start
       if ( m_nLower > value ) {
         BOOST_LOG_TRIVIAL(trace) << "heat call enable  (" << m_nLower << " > " << value << ") - init";
-        //m_pGasValveState->Enable(); 
         m_fHysteresis_jump = [this]( uint16_t value ){ Hysteresis_lt( value ); };
       }
       else {
         if ( m_nUpper < value ) {
           BOOST_LOG_TRIVIAL(trace) << "heat call disable (" << m_nUpper << " < " << value << ") - init";
-          //m_pGasValveState->Enable(); 
           m_fHysteresis_jump = [this]( uint16_t value ){ Hysteresis_gt( value ); };
         }
       }
     };
 
   m_pGasValveState = std::make_unique<GpioState>( "heat_call_enable", gpio_line );
-  m_pGasValveState->Disable(); // wait until we know water temperature
+  //m_pGasValveState->Disable(); // wait until we know water temperature
 
 }
 
@@ -62,7 +60,7 @@ void GasValve::Process( uint16_t value ) {
 void GasValve::Hysteresis_gt( uint16_t value ) {
   if ( m_nLower > value ) {
     BOOST_LOG_TRIVIAL(trace) << "heat call enable  (" << m_nLower << " > " << value << ")";
-    m_pGasValveState->Enable();
+    m_pGasValveState->RelayOff(); // normally closed (n/c) - closed - allow heat call
     m_fHysteresis_jump = [this]( uint16_t value ){ Hysteresis_lt( value ); };
   }
 }
@@ -70,7 +68,7 @@ void GasValve::Hysteresis_gt( uint16_t value ) {
 void GasValve::Hysteresis_lt( uint16_t value ) {
   if ( m_nUpper < value ) {
     BOOST_LOG_TRIVIAL(trace) << "heat call disable (" << m_nUpper << " < " << value << ")";
-    m_pGasValveState->Disable();
+    m_pGasValveState->RelayOn(); // normally closed (n/c) - open - disallow heat call
     m_fHysteresis_jump = [this]( uint16_t value ){ Hysteresis_gt( value ); };
   }
 }

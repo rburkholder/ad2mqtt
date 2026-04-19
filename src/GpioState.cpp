@@ -44,14 +44,15 @@ GpioState::GpioState( const std::string& sName, unsigned int line_offset )
 {}
 
 GpioState::~GpioState() {
-  Disable();
+  RelayOff();
   lr.release();
 }
 
-void GpioState::Enable() {
-  lr.set_value( lo, ::gpiod::line::value::ACTIVE);
+void GpioState::RelayOn() {
+  lr.set_value( lo, ::gpiod::line::value::ACTIVE );
 }
 
-void GpioState::Disable() {
-  lr.set_value( lo, ::gpiod::line::value::INACTIVE);
+void GpioState::RelayOff() {
+  lr.set_value( lo, ::gpiod::line::value::INACTIVE );
 }
+
