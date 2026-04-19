@@ -45,7 +45,7 @@ Loop::Loop( const config::Values& choices, asio::io_context& io_context )
 , m_timerPollInterval( io_context )
 , m_AnalogChannels( choices )
 , m_cntReportTrigger( choices.nReportInterval )
-, m_gas_valve( choices.sGasGPIO, choices.nGasUpper, choices.nGasLower )
+, m_gas_valve( choices.nGasGPIO, choices.nGasUpper, choices.nGasLower )
 {
 /*
   int rc;

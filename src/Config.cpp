@@ -47,11 +47,13 @@ namespace {
   static const std::string sValue_AInTemperatureIx( "ain_temperature_ix" );
   //static const std::string sValue_AInFlameIx( "ain_flame_ix" );
 
-  static const std::string sValue_Gas_GPIO(  "gas_gpio" );
+  static const std::string sValue_Gas_GPIO_ix(  "gas_gpio_ix" );
+  static const std::string sValue_Gas_GPIO_name(  "gas_gpio_name" );
   static const std::string sValue_Gas_Upper( "gas_upper" );
   static const std::string sValue_Gas_Lower( "gas_lower" );
 
-  static const std::string sValue_Pump_GPIO(  "pump_gpio" );
+  static const std::string sValue_Pump_GPIO_ix(  "pump_gpio_ix" );
+  static const std::string sValue_Pump_GPIO_name(  "pump_gpio_name" );
   static const std::string sValue_Pump_Upper( "pump_upper" );
   static const std::string sValue_Pump_Lower( "pump_lower" );
 
@@ -117,13 +119,15 @@ bool Load( const std::string& sFileName, Values& values ) {
 
       ( sValue_AInTemperatureIx.c_str(), po::value<uint16_t>( &values.ixAInTemperature )->default_value( 0 ), "analog-in temperature" )
 
-      ( sValue_Gas_GPIO.c_str(), po::value<std::string>( &values.sGasGPIO )->default_value( "" ), "gas - gpio label" )
-      ( sValue_Gas_Upper.c_str(), po::value<uint16_t>( &values.nGasUpper )->default_value( 0 ), "gas upper - off" )
-      ( sValue_Gas_Lower.c_str(), po::value<uint16_t>( &values.nGasLower )->default_value( 0 ), "gas lower - on" )
+      ( sValue_Gas_GPIO_ix.c_str(), po::value<unsigned int>( &values.nGasGPIO ), "gas - gpio ix" )
+      ( sValue_Gas_GPIO_name.c_str(), po::value<std::string>( &values.sGasGPIO )->default_value( "" ), "gas - gpio label" )
+      ( sValue_Gas_Upper.c_str(), po::value<uint16_t>( &values.nGasUpper ), "gas upper - off" )
+      ( sValue_Gas_Lower.c_str(), po::value<uint16_t>( &values.nGasLower ), "gas lower - on" )
 
-      ( sValue_Pump_GPIO.c_str(), po::value<std::string>( &values.sPumpGPIO )->default_value( "" ), "pump - gpio label" )
-      ( sValue_Pump_Upper.c_str(), po::value<uint16_t>( &values.nPumpUpper )->default_value( 0 ), "pump upper - on" )
-      ( sValue_Pump_Lower.c_str(), po::value<uint16_t>( &values.nPumpLower )->default_value( 0 ), "pump lower - off" )
+      ( sValue_Pump_GPIO_ix.c_str(), po::value<unsigned int>( &values.nPumpGPIO ), "pump - gpio label" )
+      ( sValue_Pump_GPIO_name.c_str(), po::value<std::string>( &values.sPumpGPIO )->default_value( "" ), "pump - gpio label" )
+      ( sValue_Pump_Upper.c_str(), po::value<uint16_t>( &values.nPumpUpper ), "pump upper - on" )
+      ( sValue_Pump_Lower.c_str(), po::value<uint16_t>( &values.nPumpLower ), "pump lower - off" )
 
       ;
     po::variables_map vm;
@@ -183,13 +187,15 @@ bool Load( const std::string& sFileName, Values& values ) {
         bOk = false;
       }
 
-      bOk &= parse<std::string>( sFileName, vm, sValue_Gas_GPIO,  values.sGasGPIO );
-      bOk &= parse<uint16_t>(    sFileName, vm, sValue_Gas_Upper, values.nGasUpper );
-      bOk &= parse<uint16_t>(    sFileName, vm, sValue_Gas_Lower, values.nGasLower );
+      bOk &= parse<unsigned int>( sFileName, vm, sValue_Gas_GPIO_ix,  values.nGasGPIO );
+      bOk &= parse<std::string>(  sFileName, vm, sValue_Gas_GPIO_name,  values.sGasGPIO );
+      bOk &= parse<uint16_t>(     sFileName, vm, sValue_Gas_Upper, values.nGasUpper );
+      bOk &= parse<uint16_t>(     sFileName, vm, sValue_Gas_Lower, values.nGasLower );
 
-      bOk &= parse<std::string>( sFileName, vm, sValue_Pump_GPIO,  values.sPumpGPIO );
-      bOk &= parse<uint16_t>(    sFileName, vm, sValue_Pump_Upper, values.nPumpUpper );
-      bOk &= parse<uint16_t>(    sFileName, vm, sValue_Pump_Lower, values.nPumpLower );
+      bOk &= parse<unsigned int>( sFileName, vm, sValue_Pump_GPIO_ix,  values.nPumpGPIO );
+      bOk &= parse<std::string>(  sFileName, vm, sValue_Pump_GPIO_name,  values.sPumpGPIO );
+      bOk &= parse<uint16_t>(     sFileName, vm, sValue_Pump_Upper, values.nPumpUpper );
+      bOk &= parse<uint16_t>(     sFileName, vm, sValue_Pump_Lower, values.nPumpLower );
 
     }
 

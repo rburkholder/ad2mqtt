@@ -13,7 +13,7 @@
  ************************************************************************/
 
 /*
- * File:    Gas.hpp
+ * File:    GasValve.hpp
  * Author:  raymond@burkholder.net
  * Project: AD2MQTT
  * Created: 2026/02/21 18:47:09
@@ -26,12 +26,12 @@
 #include <memory>
 #include <functional>
 
-class GasValveState;
+class GpioState;
 
 class GasValve {
 public:
 
-  GasValve( const std::string& gpio, uint16_t upper, uint16_t lower );
+  GasValve( unsigned int gpio_line, uint16_t upper, uint16_t lower );
   ~GasValve();
 
   void Process( uint16_t );
@@ -44,7 +44,7 @@ private:
 
   const std::string m_sGPIO;
 
-  using pGasValveState_t = std::unique_ptr<GasValveState>;
+  using pGasValveState_t = std::unique_ptr<GpioState>;
   pGasValveState_t m_pGasValveState;
 
   void Hysteresis_gt( uint16_t );

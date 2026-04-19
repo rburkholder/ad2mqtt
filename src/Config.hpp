@@ -41,11 +41,13 @@ struct Values {
 
   uint16_t ixAInTemperature; // water temperature monitor for gas valve and pump
 
-  std::string sGasGPIO;
+  unsigned int nGasGPIO;  // line offset
+  std::string sGasGPIO; // unused
   uint16_t nGasUpper; // off
   uint16_t nGasLower; // on
 
-  std::string sPumpGPIO;
+  unsigned int nPumpGPIO; // line offset
+  std::string sPumpGPIO;  // unused
   uint16_t nPumpUpper; // on
   uint16_t nPumpLower; // off
 
