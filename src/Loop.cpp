@@ -39,6 +39,10 @@
 //   accept 'get' for refresh, specific key for single value
 //   track changes and emit delta
 
+namespace {
+  static const std::string_view c_svThermostatTopic( "zwave/1/+/66/0/state" );
+}
+
 Loop::Loop( const config::Values& choices, asio::io_context& io_context )
 : m_choices( choices ), m_io_context( io_context )
 , m_signals( io_context, SIGINT ) // SIGINT is called '^C'
@@ -87,6 +91,12 @@ Loop::Loop( const config::Values& choices, asio::io_context& io_context )
 
   asio::post( m_io_context, std::bind( &Loop::Poll, this ) );
 
+  m_pMqtt->Subscribe(
+    c_svThermostatTopic,
+    [this]( const std::string_view& svTopic, const std::string_view& svMessage ){
+      m_pump.Process( svTopic, svMessage );
+    }
+  );
 }
 
 void Loop::Signals( const boost::system::error_code& error_code, int signal_number ) {
@@ -194,6 +204,7 @@ void Loop::Poll() {
 }
 
 Loop::~Loop() {
+  m_pMqtt->UnSubscribe( c_svThermostatTopic );
   m_pWorkGuard.reset();
   m_pMqtt.reset();
 }

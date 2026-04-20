@@ -25,6 +25,7 @@
 #include <string>
 #include <memory>
 #include <functional>
+#include <string_view>
 
 class GpioState;
 
@@ -35,6 +36,7 @@ public:
   ~Pump();
 
   void Process( uint16_t );
+  void Process( const std::string_view& svTopic, const std::string_view& svMessage );
 
 protected:
 private:
@@ -49,6 +51,8 @@ private:
 
   void Hysteresis_gt( uint16_t );
   void Hysteresis_lt( uint16_t );
+
+  size_t m_cntHeatCall;
 
   using fHysteresis_t = std::function<void(uint16_t)>;
   fHysteresis_t m_fHysteresis_jump;
