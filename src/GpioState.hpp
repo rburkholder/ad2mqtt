@@ -32,10 +32,14 @@ public:
   void RelayOn();
   void RelayOff();
 
+  bool State() const { return state; }
+
 protected:
 private:
   ::gpiod::chip chip; // declare before line_request
   ::gpiod::line_request lr; // declare after chip
   ::gpiod::line::offset lo;
+
+  bool state;
 };
 

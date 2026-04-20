@@ -41,6 +41,7 @@ GpioState::GpioState( const std::string& sName, unsigned int line_offset )
    )
   .do_request() // Request the line(s)
  )
+, state( false )
 {}
 
 GpioState::~GpioState() {
@@ -49,10 +50,12 @@ GpioState::~GpioState() {
 }
 
 void GpioState::RelayOn() {
+  state = true;
   lr.set_value( lo, ::gpiod::line::value::ACTIVE );
 }
 
 void GpioState::RelayOff() {
+  state = false;
   lr.set_value( lo, ::gpiod::line::value::INACTIVE );
 }
 
