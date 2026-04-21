@@ -61,6 +61,7 @@ void Pump::Process( uint16_t value ) {
   m_fHysteresis_jump( value );
 }
 
+// when temperature is below setpoint, and no heat call, relay on for n/c connection, turns off pump
 void Pump::Hysteresis_gt( uint16_t value ) {
   if ( ( m_nLower > value ) && ( 0 == m_cntHeatCall ) ) {
     BOOST_LOG_TRIVIAL(trace) << "pump disable (" << m_nLower << " > " << value << ")";
@@ -69,6 +70,7 @@ void Pump::Hysteresis_gt( uint16_t value ) {
   }
 }
 
+// when temperature is above setpoint, relay open for n/c connection, turns on pump
 void Pump::Hysteresis_lt( uint16_t value ) {
   if ( m_nUpper < value ) {
     BOOST_LOG_TRIVIAL(trace) << "pump enable  (" << m_nUpper << " < " << value << ")";
@@ -102,6 +104,9 @@ void Pump::Process( const std::string_view& svTopic, const std::string_view& svM
       //  BOOST_LOG_TRIVIAL(trace) << "pump trigger sub " << item;
       //}
 
+      // sample message:
+      // zwave/1/13/66/0/state {"time":1776620420521,"value":0,"nodeName":"thermostat03","nodeLocation":"family room"}
+
       if ( 4 == vkv.size() ) {
         const std::string_view svValue( vkv[ 1 ] );
         if ( 0 == svValue.find( "\"value\":" ) ) {
@@ -112,7 +117,7 @@ void Pump::Process( const std::string_view& svTopic, const std::string_view& svM
               m_cntHeatCall--;
             }
             if ( ( 0 == m_cntHeatCall ) && ( !m_pPumpState->State() ) ) {
-              BOOST_LOG_TRIVIAL(trace) << "pump trigger - enable off";
+              //BOOST_LOG_TRIVIAL(trace) << "pump trigger - enable off";
             }
           }
           else {
