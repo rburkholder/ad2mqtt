@@ -22,8 +22,10 @@
 #include "GpioState.hpp"
 
 namespace {
-  static const std::filesystem::path chip_path("/dev/gpiochip3");
+  // based upon gpioinfo -c gpiochip1
+  static const std::filesystem::path chip_path("/dev/gpiochip1");
   // based upon gpioinfo -c gpiochip3
+  //static const std::filesystem::path chip_path("/dev/gpiochip3");
   //static const ::gpiod::line::offset line_offset = 5;
 }
 
